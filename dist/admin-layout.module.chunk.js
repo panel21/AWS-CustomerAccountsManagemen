@@ -65513,7 +65513,8 @@ var TableListComponent = (function () {
             _this.customersInstances = res.customersInstances;
             _this.managersInstances = res.managersInstances;
         }, function (error) {
-            _this.router.navigate(['/login']);
+            __WEBPACK_IMPORTED_MODULE_1__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', 'If data does not update automatically, please reload the page!');
+            // this.router.navigate(['/login']);
         });
     };
     TableListComponent.prototype.editRecord = function (form) {

@@ -31,7 +31,8 @@ module.exports = webpackAsyncContext;
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return appConfig; });
 var appConfig = {
-    apiUrl: 'http://localhost:5000/api'
+    apiUrl: 'https://aws-01.herokuapp.com/api'
+    // apiUrl: 'http://localhost:5000/api'
 };
 
 
