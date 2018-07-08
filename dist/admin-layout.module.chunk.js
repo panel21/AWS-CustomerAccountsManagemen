@@ -64675,6 +64675,7 @@ var DashboardComponent = (function () {
         this.userService.stopInstance(body)
             .subscribe(function (res) {
             console.log(res);
+            console.log(body);
             // console.log(res.StoppingInstances[0].PreviousState.Name);
             message = res.message == undefined ? res.StoppingInstances[0].PreviousState.Name == "stopped" ? "Instance already stopped" : "Stopping instance" : res.message;
             __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);

@@ -39,8 +39,8 @@ const aws = require('./routes/aws.route');
 const path = require('path');
 
 // mongoose.connect('mongodb://34.227.199.186/32/jwtauth');
-mongoose.connect('mongodb://admin:r00tr00t@ds131601.mlab.com:31601/aws');
-// mongoose.connect('mongodb://localhost/jwtauth');
+// mongoose.connect('mongodb://admin:r00tr00t@ds131601.mlab.com:31601/aws');
+mongoose.connect('mongodb://localhost/awsDB');
 
 const PORT = process.env.PORT || 5000;
 const corsOptions = {
