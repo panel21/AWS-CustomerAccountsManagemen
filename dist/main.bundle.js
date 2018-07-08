@@ -31,8 +31,8 @@ module.exports = webpackAsyncContext;
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return appConfig; });
 var appConfig = {
-    apiUrl: 'https://aws-01.herokuapp.com/api'
-    // apiUrl: 'http://localhost:5000/api'
+    // apiUrl: 'https://aws-01.herokuapp.com/api'
+    apiUrl: 'http://localhost:5000/api'
 };
 
 
@@ -834,7 +834,7 @@ var UserService = (function () {
     UserService.prototype.getUserData = function (body) {
         var headers = new Headers({ 'Content-Type': 'application/json' });
         var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
-        return this.http.post(this.url + ("/" + body.type + "/mydata") + token, body)
+        return this.http.post(this.url + ("/" + body.type + "/mydata ") + token, body)
             .map(function (res) { return res.json(); });
     };
     /* to update the instances */

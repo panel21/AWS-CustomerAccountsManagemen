@@ -64628,9 +64628,14 @@ var DashboardComponent = (function () {
     };
     DashboardComponent.prototype.startInstance = function (instanceId, region, field) {
         var _this = this;
-        //console.log(instanceId);
-        if (instanceId || instanceId == null || instanceId == "") {
-            return;
+        var message;
+        if (instanceId.trim() == "") {
+            message = "Instance ID must be provided";
+            return __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
+        }
+        else if (region.trim() == "") {
+            message = "Region must be provided";
+            return __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
         }
         var body = {
             type: localStorage.getItem('type'),
@@ -64639,10 +64644,11 @@ var DashboardComponent = (function () {
             region: region,
             DryRun: false
         };
-        // console.log(JSON.stringify(body, undefined, 2));
         this.userService.startInstance(body)
             .subscribe(function (res) {
             console.log(res);
+            message = res.message == undefined ? "Starting instance!" : res.message;
+            __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
             _this.ngOnInit();
         }, function (error) {
             console.log(error);
@@ -64650,9 +64656,14 @@ var DashboardComponent = (function () {
     };
     DashboardComponent.prototype.stopInstance = function (instanceId, region) {
         var _this = this;
-        //console.log(instanceId);
-        if (instanceId || instanceId == null || instanceId == "") {
-            return;
+        var message;
+        if (instanceId.trim() == "") {
+            message = "Instance ID must be provided";
+            return __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
+        }
+        else if (region.trim() == "") {
+            message = "Region must be provided";
+            return __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
         }
         var body = {
             type: localStorage.getItem('type'),
@@ -64661,10 +64672,12 @@ var DashboardComponent = (function () {
             region: region,
             DryRun: false
         };
-        // console.log(JSON.stringify(body, undefined, 2));
         this.userService.stopInstance(body)
             .subscribe(function (res) {
             console.log(res);
+            // console.log(res.StoppingInstances[0].PreviousState.Name);
+            message = res.message == undefined ? res.StoppingInstances[0].PreviousState.Name == "stopped" ? "Instance already stopped" : "Stopping instance" : res.message;
+            __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
             _this.ngOnInit();
         }, function (error) {
             console.log(error);
