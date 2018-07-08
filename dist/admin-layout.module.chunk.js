@@ -64587,8 +64587,8 @@ var DashboardComponent = (function () {
             if (error.status == 401) {
                 localStorage.clear();
                 __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', 'Session timeout!');
+                _this.router.navigate(['/login']);
             }
-            _this.router.navigate(['/login']);
         });
     }
     DashboardComponent.prototype.getSpecificUserData = function (body) {
