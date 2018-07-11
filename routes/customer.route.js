@@ -115,7 +115,7 @@ router.put('/updatepersonal', function(req, res, next) {
     Customer.findOne({email: req.body.email})
     .exec()
     .then(function(customer) {
-        console.log(JSON.stringify(req.body, undefined, 2));
+        // console.log(JSON.stringify(req.body, undefined, 2));
         if(!customer) { 
             return res.status(404).json({ 
                 message: `${req.body.type}  '${req.body.email}' not found!` 
@@ -265,7 +265,7 @@ router.put('/updateinstances', function(req, res, next) {
             }) 
         }
         customer.instances = req.body.instances;
-        console.log(customer.instances+"\n"+req.body.instances);
+        // console.log(customer.instances+"\n"+req.body.instances);
         customer.save()
         .then(function(result) {
             if(!result) {
