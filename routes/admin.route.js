@@ -42,6 +42,36 @@ router.post('/signin', function(req, res, next){
     });
 });
 
+router.post('/signup', function(req, res, next) {
+    // console.log("From server: "+JSON.stringify(req.body, undefined, 2));
+    bcrypt.hash(req.body.password, 10, function(err, hash){
+        if(err) {
+            return res.status(500).json({
+                err
+            });
+        }
+        else {
+            const admin = new Admin({
+                _id: new  mongoose.Types.ObjectId(),
+                fullName: req.body.fullName,
+                password: hash,
+                email: req.body.email,
+                instanceId: req.body.instanceId
+            });
+            admin.save().then(function(result) {
+                // console.log(result);
+                res.status(200).json({
+                    success: 'New admin has been created'
+                });
+            }).catch(error => {
+                res.status(500).json({
+                    error
+                });
+            });
+        }
+    });
+});
+
 router.use('/', function (req, res, next) {
     jwt.verify(req.query.token, 'secretMessage', function (err, decoded) {
         if (err) {
@@ -106,93 +136,81 @@ router.post('/mydata', function(req, res, next) {
     });;
 });
 
-router.post('/signup', function(req, res, next) {
-    // console.log("From server: "+JSON.stringify(req.body, undefined, 2));
-    bcrypt.hash(req.body.password, 10, function(err, hash){
-        if(err) {
-            return res.status(500).json({
-                err
-            });
-        }
-        else {
-            const admin = new Admin({
-                _id: new  mongoose.Types.ObjectId(),
-                fullName: req.body.fullName,
-                password: hash,
-                email: req.body.email,
-                instanceId: req.body.instanceId
-            });
-            admin.save().then(function(result) {
-                // console.log(result);
-                res.status(200).json({
-                    success: 'New admin has been created'
-                });
-            }).catch(error => {
-                res.status(500).json({
-                    error
-                });
-            });
-        }
-    });
-});
-
-router.put('/updatepersonal', function(req, res, next) {
-    Admin.findOne({email: req.body.email})
-    .exec()
-    .then(function(admin) {
-        if(!admin) { 
-            return res.status(404).json({ 
-                message: `Admin with email '${req.body.email}' not found!` 
-            }) 
-        }
-        admin.fullName = req.body.newFullName
-        admin.save()
-        .then(function(result) {
-            if(!result) {
-                return res.status(404).json({ 
-                    message: `Unable to update admin!`
-                })
-            }
-            res.status(200).json({
-                success: 'Admin has been updated'
-            });
-        })
-        .catch(error => {
-            res.status(500).json({
-                error: "Here while updating admin: "+error
-            });
-        });
-    })
-    .catch(error => {
-        res.status(500).json({
-            error: error
-        });
-    });;
-});
+// router.put('/updatepersonal', function(req, res, next) {
+//     Admin.findOne({email: req.body.email})
+//     .exec()
+//     .then(function(admin) {
+//         if(!admin) { 
+//             return res.status(404).json({ 
+//                 message: `Admin with email '${req.body.email}' not found!` 
+//             }) 
+//         }
+//         if (!bcrypt.compareSync(req.body.adminOldPassword, admin.password)) {
+//             return res.status(401).json({
+//                 title: 'Unauthorized Access',
+//                 error: {message: 'Invalid credentials'}
+//             });
+//         }
+//         var newEmail = req.body.newEmail;
+//         var fullName = req.body.fullName;
+//         var password = req.body.password;
+//         admin.fullName = fullName == undefined || fullName.trim() === '' ? admin.fullName : fullName;
+//         admin.password = password == undefined || password.trim() === '' ? admin.password : password;
+//         admin.email = newEmail == undefined || newEmail.trim() === '' ? admin.email : newEmail;
+//         admin.save()
+//         .then(function(result) {
+//             if(!result) {
+//                 return res.status(404).json({ 
+//                     message: `Unable to update admin!`
+//                 })
+//             }
+//             res.status(200).json({
+//                 success: 'Admin has been updated'
+//             });
+//         })
+//         .catch(error => {
+//             res.status(500).json({
+//                 error: "Here while updating admin: "+error
+//             });
+//         });
+//     })
+//     .catch(error => {
+//         res.status(500).json({
+//             error: error
+//         });
+//     });;
+// });
 
 router.put('/updatepassword', function(req, res, next) {
-    Admin.findOne({email: req.body.email})
+    // console.log(JSON.stringify(req.body, undefined, 2));
+    Admin.findOne({email: req.body.oldEmail})
     .exec()
     .then(function(admin) {
         if(!admin) { 
             return res.status(404).json({ 
-                message: `Admin '${req.body.email}' not found!` 
+                message: `Admin '${req.body.oldEmail}' not found!` 
             }) 
         }
-        if (!bcrypt.compareSync(req.body.adminOldPassword, admin.password)) {
+        if (!bcrypt.compareSync(req.body.oldPassword, admin.password)) {
             return res.status(401).json({
                 title: 'Unauthorized Access',
                 error: {message: 'Invalid credentials'}
             });
         }
         bcrypt.hash(req.body.newPassword, 10, function(err, hash){
-            if(err) {
-                return res.status(500).json({
-                    error: err
-                });
-            }
-            admin.password = hash,
-            admin.email = req.body.newEmail
+            // if(err) {
+            //     return res.status(500).json({
+            //         error: err + ""
+            //     });
+            // }
+            // admin.password = hash;
+            var newEmail = req.body.newEmail;
+            var fullName = req.body.fullName;
+            var password = req.body.newPassword;
+            admin.fullName = fullName == undefined || fullName.trim() === '' ? admin.fullName : fullName;
+            admin.password = password == undefined || password.trim() === '' ? admin.password : hash;
+            admin.email = newEmail == undefined || newEmail.trim() === '' ? admin.email : newEmail;
+            // console.log(JSON.stringify(admin, undefined, 2));
             admin.save()
             .then(function(result) {
                 if(!result) {
@@ -213,7 +231,7 @@ router.put('/updatepassword', function(req, res, next) {
     })
     .catch(error => {
         res.status(500).json({
-            error: error
+            error: error+" Here while.."
         });
     });;
 });

@@ -228,15 +228,19 @@ var AppRoutingModule = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("./node_modules/@angular/common/esm5/common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__footer_footer_component__ = __webpack_require__("./src/app/components/footer/footer.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__ = __webpack_require__("./src/app/components/navbar/navbar.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sidebar_sidebar_component__ = __webpack_require__("./src/app/components/sidebar/sidebar.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__footer_footer_component__ = __webpack_require__("./src/app/components/footer/footer.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__navbar_navbar_component__ = __webpack_require__("./src/app/components/navbar/navbar.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__sidebar_sidebar_component__ = __webpack_require__("./src/app/components/sidebar/sidebar.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__angular_material__ = __webpack_require__("./node_modules/@angular/material/esm5/material.es5.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -251,16 +255,23 @@ var ComponentsModule = (function () {
             imports: [
                 __WEBPACK_IMPORTED_MODULE_1__angular_common__["b" /* CommonModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_router__["d" /* RouterModule */],
+                __WEBPACK_IMPORTED_MODULE_3__angular_forms__["c" /* FormsModule */],
+                __WEBPACK_IMPORTED_MODULE_7__angular_material__["a" /* MatButtonModule */],
+                __WEBPACK_IMPORTED_MODULE_7__angular_material__["e" /* MatRippleModule */],
+                __WEBPACK_IMPORTED_MODULE_7__angular_material__["c" /* MatInputModule */],
+                __WEBPACK_IMPORTED_MODULE_7__angular_material__["f" /* MatTooltipModule */],
+                __WEBPACK_IMPORTED_MODULE_7__angular_material__["d" /* MatRadioModule */],
+                __WEBPACK_IMPORTED_MODULE_7__angular_material__["b" /* MatDialogModule */],
             ],
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_3__footer_footer_component__["a" /* FooterComponent */],
-                __WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__["a" /* NavbarComponent */],
-                __WEBPACK_IMPORTED_MODULE_5__sidebar_sidebar_component__["b" /* SidebarComponent */]
+                __WEBPACK_IMPORTED_MODULE_4__footer_footer_component__["a" /* FooterComponent */],
+                __WEBPACK_IMPORTED_MODULE_5__navbar_navbar_component__["a" /* NavbarComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__sidebar_sidebar_component__["b" /* SidebarComponent */]
             ],
             exports: [
-                __WEBPACK_IMPORTED_MODULE_3__footer_footer_component__["a" /* FooterComponent */],
-                __WEBPACK_IMPORTED_MODULE_4__navbar_navbar_component__["a" /* NavbarComponent */],
-                __WEBPACK_IMPORTED_MODULE_5__sidebar_sidebar_component__["b" /* SidebarComponent */]
+                __WEBPACK_IMPORTED_MODULE_4__footer_footer_component__["a" /* FooterComponent */],
+                __WEBPACK_IMPORTED_MODULE_5__navbar_navbar_component__["a" /* NavbarComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__sidebar_sidebar_component__["b" /* SidebarComponent */]
             ]
         })
     ], ComponentsModule);
@@ -332,7 +343,7 @@ module.exports = ""
 /***/ "./src/app/components/navbar/navbar.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav class=\"navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top\">\n    <div class=\"container-fluid\">\n        <div class=\"navbar-wrapper\">\n            <h3 class=\"navbar-brand\">{{type + title}}</h3>\n            <!-- <button mat-raised-button type=\"button\" matTooltip=\"Edit\" class=\"btn btn-danger btn-link btn-sm btn-just-icon\" (click)=\"editProfile()\" *ngIf=\"type.length > 0;\">\n                <i class=\"material-icons\">edit</i>\n            </button> -->\n            \n            <!-- <p class=\"navbar-brand\">{{getTitle()}}</p> -->\n        </div>\n        <button mat-raised-button class=\"navbar-toggler\" type=\"button\" (click)=\"sidebarToggle()\">\n            <span class=\"sr-only\">Toggle navigation</span>\n            <span class=\"navbar-toggler-icon icon-bar\"></span>\n            <span class=\"navbar-toggler-icon icon-bar\"></span>\n            <span class=\"navbar-toggler-icon icon-bar\"></span>\n        </button>\n        <div class=\"collapse navbar-collapse justify-content-end\" id=\"navigation\">\n                \n                <!-- <form class=\"navbar-form\">\n                    <div class=\"input-group no-border\">\n                        <input type=\"text\" value=\"\" class=\"form-control\" placeholder=\"Search...\">\n                        <button mat-raised-button type=\"submit\" class=\"btn btn-white btn-round btn-just-icon\">\n                            <i class=\"material-icons\">search</i>\n                            <div class=\"ripple-container\"></div>\n                        </button>\n                    </div>\n                </form> -->\n                <!-- <ul class=\"navbar-nav\">\n                    <li class=\"nav-item\">\n                        <a class=\"nav-link\" href=\"#pablo\">\n                            <i class=\"material-icons\">dashboard</i>\n                            <p>\n                                <span class=\"d-lg-none d-md-block\">Stats</span>\n                            </p>\n                        </a>\n                    </li>\n                    <li class=\"nav-item dropdown\">\n                        <a class=\"nav-link\" href=\"http://example.com\" id=\"navbarDropdownMenuLink\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n                            <i class=\"material-icons\">notifications</i>\n                            <span class=\"notification\">5</span>\n                            <p>\n                                <span class=\"d-lg-none d-md-block\">Some Actions</span>\n                            </p>\n                        </a>\n                        <div class=\"dropdown-menu dropdown-menu-right\" aria-labelledby=\"navbarDropdownMenuLink\">\n                            <a class=\"dropdown-item\" href=\"#\">Mike John responded to your email</a>\n                            <a class=\"dropdown-item\" href=\"#\">You have 5 new tasks</a>\n                            <a class=\"dropdown-item\" href=\"#\">You're now friend with Andrew</a>\n                            <a class=\"dropdown-item\" href=\"#\">Another Notification</a>\n                            <a class=\"dropdown-item\" href=\"#\">Another One</a>\n                        </div>\n                    </li>\n                    <li class=\"nav-item\">\n                        <a class=\"nav-link\" href=\"#pablo\">\n                            <i class=\"material-icons\">person</i>\n                            <p>\n                                <span class=\"d-lg-none d-md-block\">Account</span>\n                            </p>\n                        </a>\n                    </li>\n                </ul> -->\n                \n                \n                \n            </div>\n        </div>\n    </nav>\n    \n    <!--\n        \n        <nav class=\"navbar navbar-transparent navbar-absolute\">\n            <div class=\"container-fluid\">\n                <div class=\"navbar-header\">\n                    <button mat-raised-button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" (click)=\"sidebarToggle()\">\n                        <span class=\"sr-only\">Toggle navigation</span>\n                        <span class=\"icon-bar\"></span>\n                        <span class=\"icon-bar\"></span>\n                        <span class=\"icon-bar\"></span>\n                    </button>\n                    <a class=\"navbar-brand\" href=\"#\">{{getTitle()}}</a>\n                </div>\n                <div class=\"collapse navbar-collapse\">\n                    <ul class=\"nav navbar-nav navbar-right\">\n                        <li>\n                            <a href=\"#pablo\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\n                                <i class=\"material-icons\">dashboard</i>\n                                <p class=\"hidden-lg hidden-md\">Dashboard</p>\n                            </a>\n                        </li>\n                        <li class=\"dropdown\">\n                            <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\n                                <i class=\"material-icons\">notifications</i>\n                                <span class=\"notification\">5</span>\n                                <p class=\"hidden-lg hidden-md\">Notifications</p>\n                            </a>\n                            <ul class=\"dropdown-menu\">\n                                <li><a href=\"#\">Mike John responded to your email</a></li>\n                                <li><a href=\"#\">You have 5 new tasks</a></li>\n                                <li><a href=\"#\">You're now friend with Andrew</a></li>\n                                <li><a href=\"#\">Another Notification</a></li>\n                                <li><a href=\"#\">Another One</a></li>\n                            </ul>\n                        </li>\n                        <li>\n                            <a href=\"#pablo\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">\n                                <i class=\"material-icons\">person</i>\n                                <p class=\"hidden-lg hidden-md\">Profile</p>\n                            </a>\n                        </li>\n                    </ul>\n                    \n                    <form class=\"navbar-form navbar-right\" role=\"search\">\n                        <div class=\"form-group form-black is-empty\">\n                            <input type=\"text\" class=\"form-control\" placeholder=\"Search\">\n                            <span class=\"material-input\"></span>\n                        </div>\n                        <button mat-raised-button type=\"submit\" class=\"btn btn-white btn-round btn-just-icon\">\n                            <i class=\"material-icons\">search</i><div class=\"ripple-container\"></div>\n                        </button>\n                    </form>\n                </div>\n            </div>\n        </nav> -->\n        "
+module.exports = "<nav class=\"navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top\">\n    <div class=\"container-fluid\">\n        <div class=\"navbar-wrapper\">\n            <h3 class=\"navbar-brand\">{{type + title}}</h3>\n            <button *ngIf=\"isAdmin\" mat-raised-button type=\"button\" matTooltip=\"Edit\" class=\"btn btn-danger btn-link btn-sm btn-just-icon\" (click)=\"open(adminDetails)\">\n                <i class=\"material-icons\">edit</i>\n            </button>\n            \n            <!-- <p class=\"navbar-brand\">{{getTitle()}}</p> -->\n        </div>\n        <button mat-raised-button class=\"navbar-toggler\" type=\"button\" (click)=\"sidebarToggle()\">\n            <span class=\"sr-only\">Toggle navigation</span>\n            <span class=\"navbar-toggler-icon icon-bar\"></span>\n            <span class=\"navbar-toggler-icon icon-bar\"></span>\n            <span class=\"navbar-toggler-icon icon-bar\"></span>\n        </button>\n        <div class=\"collapse navbar-collapse justify-content-end\" id=\"navigation\">\n            \n        </div>\n    </div>\n</nav>\n\n\n<ng-template #adminDetails let-c=\"close\" let-d=\"dismiss\" class=\"container-fluid\">\n    <!-- <ng-template #content let-c=\"close\" let-d=\"dismiss\"> -->\n        <div class=\"modal-header\">\n            <h4 class=\"modal-title\" id=\"modal-basic-title\">Admin profile update</h4>\n            <button type=\"button\" class=\"close\" aria-label=\"Close\" (click)=\"d('Cross click')\">\n                <span aria-hidden=\"true\">&times;</span>\n            </button>\n        </div>\n        <div class=\"modal-body\">\n            \n            <form #adminUpdateForm=\"ngForm\" novalidate>\n                <div class=\"row\">\n                    <div class=\"col-md-12\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Admin name\" type=\"text\" [(ngModel)]=\"admin.fullName\" name=\"fullName\" #fullName=\"ngModel\" minlength=\"3\" required>\n                        </mat-form-field>\n                        <div *ngIf=\"adminUpdateForm.hasError('minlength', 'fullName') && fullName.touched\" class=\"alert alert-danger\">Name should be at least 3 characters</div>\n                    </div>\n                </div>\n                <div class=\"row\">\n                    <div class=\"col-md-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Admin old email\" type=\"email\" [(ngModel)]=\"admin.oldEmail\" name=\"oldEmail\" #oldEmail=\"ngModel\" disabled>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-md-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Admin new email\" type=\"email\" [(ngModel)]=\"admin.newEmail\" name=\"newEmail\" #newEmail=\"ngModel\">\n                        </mat-form-field>\n                    </div>\n                </div>\n                <div class=\"row\">\n                    <div class=\"col-md-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Old password\" type=\"password\" [(ngModel)]=\"admin.oldPassword\" name=\"oldPassword\" #oldPassword=\"ngModel\" required>\n                        </mat-form-field>\n                        <div *ngIf=\"adminUpdateForm.hasError('required', 'oldPassword')\" class=\"alert alert-danger\">Old password is required</div>\n                    </div>\n                    <div class=\"col-md-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"New password\" type=\"text\" [(ngModel)]=\"admin.newPassword\" name=\"newPassword\" #newPassword=\"ngModel\" minlength=\"5\">\n                        </mat-form-field>\n                        <div *ngIf=\"adminUpdateForm.hasError('minlength', 'newPassword') && newPassword.touched\" class=\"alert alert-danger\">Password should be at least 5 characters</div>\n                    </div>\n                </div>\n            </form>\n            \n        </div>\n        <div class=\"modal-footer\">\n            <!-- <button type=\"button\" class=\"btn btn-outline-dark\" (click)=\"c('Save click')\">Save</button> -->\n            <button mat-raised-button type=\"submit\" class=\"btn btn-danger pull-right\" (click)=\"c('Save click')\" (click)=\"updateAdmin(adminUpdateForm)\">Update</button>\n            <div class=\"clearfix\"></div>\n        </div>\n    </ng-template>\n    "
 
 /***/ }),
 
@@ -346,6 +357,9 @@ module.exports = "<nav class=\"navbar navbar-expand-lg navbar-transparent  navba
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_common__ = __webpack_require__("./node_modules/@angular/common/esm5/common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_router__ = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_ShowHideUi_service__ = __webpack_require__("./src/app/services/ShowHideUi.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ng_bootstrap_ng_bootstrap__ = __webpack_require__("./node_modules/@ng-bootstrap/ng-bootstrap/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__services_user_service__ = __webpack_require__("./src/app/services/user.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_notification_util__ = __webpack_require__("./src/app/utils/notification.util.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -360,20 +374,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
+
 var NavbarComponent = (function () {
-    function NavbarComponent(location, element, router, showHide) {
+    function NavbarComponent(location, element, router, showHide, modalService, userService) {
         this.element = element;
         this.router = router;
         this.showHide = showHide;
+        this.modalService = modalService;
+        this.userService = userService;
         this.mobile_menu_visible = 0;
         this.location = location;
         this.sidebarVisible = false;
+        this.admin = {
+            fullName: localStorage.getItem('username'),
+            oldEmail: localStorage.getItem('email'),
+            newEmail: "",
+            oldPassword: "",
+            newPassword: ""
+        };
     }
     NavbarComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.showHide.currentUser.subscribe(function (res) {
             _this.title = res.name;
-            _this.type = res.type ? res.type + ": " : '';
+            _this.type = res.type ? res.type === 'customer' ? "operator: " : res.type + ": " : '';
+            _this.isAdmin = localStorage.getItem('type') === 'admin' ? true : false;
         });
         this.listTitles = __WEBPACK_IMPORTED_MODULE_1__sidebar_sidebar_component__["a" /* ROUTES */].filter(function (listTitle) { return listTitle; });
         var navbar = this.element.nativeElement;
@@ -386,8 +413,6 @@ var NavbarComponent = (function () {
                 _this.mobile_menu_visible = 0;
             }
         });
-    };
-    NavbarComponent.prototype.editProfile = function () {
     };
     NavbarComponent.prototype.sidebarOpen = function () {
         var toggleButton = this.toggleButton;
@@ -470,6 +495,54 @@ var NavbarComponent = (function () {
         }
         return 'User';
     };
+    NavbarComponent.prototype.updateAdmin = function (form) {
+        var _this = this;
+        if (form.valid) {
+            // console.log(form.value);
+            var body = form.value;
+            body.oldEmail = localStorage.getItem('email');
+            body.type = localStorage.getItem('type');
+            // console.log(body);
+            this.userService.updatePassword(body)
+                .subscribe(function (res) {
+                form.reset();
+                localStorage.clear();
+                __WEBPACK_IMPORTED_MODULE_7__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', 'Admin updated successfully!');
+                __WEBPACK_IMPORTED_MODULE_7__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', 'Login with new credentials!');
+                _this.router.navigate(['./login']);
+                // console.log(res);
+            }, function (error) {
+                console.log(error);
+                __WEBPACK_IMPORTED_MODULE_7__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'warning', error.statusText);
+            });
+        }
+    };
+    NavbarComponent.prototype.open = function (content) {
+        var _this = this;
+        this.admin = {
+            fullName: localStorage.getItem('username'),
+            oldEmail: localStorage.getItem('email'),
+            newEmail: "",
+            oldPassword: "",
+            newPassword: ""
+        };
+        this.modalService.open(content).result.then(function (result) {
+            _this.closeResult = "Closed with: " + result;
+        }, function (reason) {
+            _this.closeResult = "Dismissed " + _this.getDismissReason(reason);
+        });
+    };
+    NavbarComponent.prototype.getDismissReason = function (reason) {
+        if (reason === __WEBPACK_IMPORTED_MODULE_5__ng_bootstrap_ng_bootstrap__["a" /* ModalDismissReasons */].ESC) {
+            return 'by pressing ESC';
+        }
+        else if (reason === __WEBPACK_IMPORTED_MODULE_5__ng_bootstrap_ng_bootstrap__["a" /* ModalDismissReasons */].BACKDROP_CLICK) {
+            return 'by clicking on a backdrop';
+        }
+        else {
+            return "with: " + reason;
+        }
+    };
     NavbarComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
             selector: 'app-navbar',
@@ -479,7 +552,9 @@ var NavbarComponent = (function () {
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__angular_common__["h" /* Location */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* ElementRef */],
             __WEBPACK_IMPORTED_MODULE_3__angular_router__["c" /* Router */],
-            __WEBPACK_IMPORTED_MODULE_4__services_ShowHideUi_service__["a" /* ShowHideUiService */]])
+            __WEBPACK_IMPORTED_MODULE_4__services_ShowHideUi_service__["a" /* ShowHideUiService */],
+            __WEBPACK_IMPORTED_MODULE_5__ng_bootstrap_ng_bootstrap__["b" /* NgbModal */],
+            __WEBPACK_IMPORTED_MODULE_6__services_user_service__["a" /* UserService */]])
     ], NavbarComponent);
     return NavbarComponent;
 }());
@@ -830,11 +905,11 @@ var UserService = (function () {
         return this.http.get(this.url + "/admin/getalldata" + token)
             .map(function (res) { return res.json(); });
     };
-    /* just for ADMIN Dashboard */
+    /* for all users */
     UserService.prototype.getUserData = function (body) {
         var headers = new Headers({ 'Content-Type': 'application/json' });
         var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
-        return this.http.post(this.url + ("/" + body.type + "/mydata ") + token, body)
+        return this.http.post(this.url + ("/" + body.type + "/mydata") + token, body)
             .map(function (res) { return res.json(); });
     };
     /* to update the instances */
@@ -881,13 +956,40 @@ var UserService = (function () {
     UserService.prototype.updateUser = function (body) {
         var headers = new Headers({ 'Content-Type': 'application/json' });
         var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
-        return this.http.put(this.url + ("/" + body.type + "/updatepersonal") + token, body)
+        return this.http.put(this.url + ("/" + body.oldType + "/updatepersonal") + token, body)
+            .map(function (res) { return res.json(); });
+    };
+    /* to update the user password and email */
+    UserService.prototype.updatePassword = function (body) {
+        var headers = new Headers({ 'Content-Type': 'application/json' });
+        var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
+        return this.http.put(this.url + ("/" + body.type + "/updatepassword") + token, body)
+            .map(function (res) { return res.json(); });
+    };
+    /* to update the manager to customer */
+    UserService.prototype.managertocustomer = function (body) {
+        var headers = new Headers({ 'Content-Type': 'application/json' });
+        var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
+        return this.http.post(this.url + "/customer/managertocustomer" + token, body)
+            .map(function (res) { return res.json(); });
+    };
+    /* to update the customer to manager */
+    UserService.prototype.customertomanager = function (body) {
+        var headers = new Headers({ 'Content-Type': 'application/json' });
+        var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
+        return this.http.post(this.url + "/manager/customertomanager" + token, body)
             .map(function (res) { return res.json(); });
     };
     UserService.prototype.deleteUser = function (body) {
         var headers = new Headers({ 'Content-Type': 'application/json' });
         var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
         return this.http.post(this.url + ("/" + body.type + "/delete") + token, body)
+            .map(function (res) { return res.json(); });
+    };
+    UserService.prototype.deleteCustomer = function (body) {
+        var headers = new Headers({ 'Content-Type': 'application/json' });
+        var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
+        return this.http.post(this.url + "/manager/deletecustomer" + token, body)
             .map(function (res) { return res.json(); });
     };
     /* A W S   R O U T E S */ /* A W S   R O U T E S */ /* A W S   R O U T E S */
@@ -911,6 +1013,48 @@ var UserService = (function () {
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__angular_http__["b" /* Http */]])
     ], UserService);
     return UserService;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/utils/notification.util.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Notification; });
+var Notification = (function () {
+    function Notification() {
+    }
+    Notification.showNotification = function (from, align, type, message) {
+        // const type = ['', 'info', 'success', 'warning', 'danger'];
+        $.notify({
+            icon: 'notifications',
+            message: message
+        }, {
+            type: type,
+            timer: 2000,
+            placement: {
+                from: from,
+                align: align
+            },
+            // tslint:disable-next-line:max-line-length
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                // tslint:disable-next-line:max-line-length
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                // tslint:disable-next-line:max-line-length
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+        });
+    };
+    return Notification;
 }());
 
 

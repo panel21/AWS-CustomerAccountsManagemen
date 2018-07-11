@@ -14,7 +14,8 @@ const manager = mongoose.Schema({
         instanceId: {type: String},
         region: {type: String},
         role: {type: String},
-        state: {type: String}
+        state: {type: String},
+        INSTANCEDETAILS: {default: {}}
     } ],
     customers: [ String ]
 });

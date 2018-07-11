@@ -67,7 +67,7 @@ router.post('/mydata', function(req, res, next) {
                 message: `No manager found`
             })
         }
-        return res.status(200).json(manager);        
+        return res.status(200).send(manager);        
     })
     .catch(error => {
         res.status(500).json({
@@ -114,6 +114,7 @@ router.put('/updatepersonal', function(req, res, next) {
     Manager.findOne({email: req.body.email})
     .exec()
     .then(function(manager) {
+        // console.log(JSON.stringify(req.body, undefined, 2));
         if(!manager) { 
             return res.status(404).json({ 
                 message: `${req.body.type} '${req.body.email}' not found!` 
@@ -147,6 +148,49 @@ router.put('/updatepersonal', function(req, res, next) {
             error: error
         });
     });;
+});
+
+router.post('/customertomanager', function(req, res, next) {
+    const manager = new Manager({
+        _id: new  mongoose.Types.ObjectId(),
+        fullName: req.body.fullName,
+        password: req.body.password,
+        email: req.body.email,
+        birthDate: req.body.birthDate,
+        phoneNumber: req.body.phoneNumber,
+        projectName: req.body.projectName,
+        companyName: req.body.companyName,
+        instances: req.body.instances,
+        customers: []
+    });
+    manager.save().then(function(result) {
+        // console.log(result);
+        res.status(200).json({
+            success: 'Customer has been upshifted'
+        });
+        Customer.deleteOne({email: req.body.email})
+        .exec()
+        .then(function(result) {
+            if(!result || result.n == 0) {
+                return res.status(404).json({ 
+                    message: `No such customer found`
+                })
+            }
+            res.status(200).json({
+                result,
+                message: `User deleted successfully`
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: error
+            });
+        });
+    }).catch(error => {
+        res.status(500).json({
+            error
+        });
+    });
 });
 
 router.put('/updatepassword', function(req, res, next) {
@@ -308,6 +352,28 @@ router.post('/delete', function(req, res, next) {
         res.status(200).json({
             result,
             message: `Manager deleted successfully`
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            message: error
+        });
+    });
+});
+
+router.post('/deletecustomer', function(req, res, next) {
+    Manager.update({}, {$pull: {customers: {$in : [req.body.email]}}}, {multi: true})
+    .exec()
+    .then(function(result) {
+        // console.log(JSON.stringify(result, undefined, 2));
+        if(!result || result.n == 0) {
+            return res.status(404).json({ 
+                message: `No such customer found`
+            })
+        }
+        res.status(200).json({
+            result,
+            message: `Customers deleted successfully`
         });
     })
     .catch(error => {

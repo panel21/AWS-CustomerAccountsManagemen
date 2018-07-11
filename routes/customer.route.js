@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Customer = require('../models/customer.model');
 const Admin = require('../models/admin.model');
+const Manager = require('../models/manager.model');
 
 router.post('/signin', function(req, res, next){
     Customer.findOne({email: req.body.email})
@@ -69,7 +70,7 @@ router.post('/signup', function(req, res, next) {
             const customer = new Customer({
                 _id: new  mongoose.Types.ObjectId(),
                 fullName: req.body.fullName,
-                password: hash,
+                password: req.body.password,
                 email: req.body.email,
                 birthDate: req.body.birthDate,
                 phoneNumber: req.body.phoneNumber,
@@ -100,7 +101,7 @@ router.post('/mydata', function(req, res, next) {
                 message: `No customer found`
             })
         }
-        return res.status(200).json(customer);        
+        return res.status(200).send(customer);        
     })
     .catch(error => {
         res.status(500).json({
@@ -114,6 +115,7 @@ router.put('/updatepersonal', function(req, res, next) {
     Customer.findOne({email: req.body.email})
     .exec()
     .then(function(customer) {
+        console.log(JSON.stringify(req.body, undefined, 2));
         if(!customer) { 
             return res.status(404).json({ 
                 message: `${req.body.type}  '${req.body.email}' not found!` 
@@ -149,6 +151,48 @@ router.put('/updatepersonal', function(req, res, next) {
     });;
 });
 
+router.post('/managertocustomer', function(req, res, next) {
+    const customer = new Customer({
+        _id: new  mongoose.Types.ObjectId(),
+        fullName: req.body.fullName,
+        password: req.body.password,
+        email: req.body.email,
+        birthDate: req.body.birthDate,
+        phoneNumber: req.body.phoneNumber,
+        projectName: req.body.projectName,
+        companyName: req.body.companyName,
+        instances: req.body.instances
+    });
+    customer.save().then(function(result) {
+        // console.log(result);
+        Manager.deleteOne({email: req.body.email})
+        .exec()
+        .then(function(result) {
+            if(!result || result.n == 0) {
+                return res.status(404).json({ 
+                    message: `No such manager found`
+                })
+            }
+            // res.status(200).json({
+            //     result,
+            //     message: `Manager deleted successfully`
+            // });
+            res.status(200).json({
+                success: 'Customer has been downshifted'
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: error
+            });
+        });
+    }).catch(error => {
+        res.status(500).json({
+            error
+        });
+    });
+});
+
 router.put('/updatepassword', function(req, res, next) {
     Customer.findOne({email: req.body.email})
     .exec()
@@ -163,13 +207,13 @@ router.put('/updatepassword', function(req, res, next) {
         .then(function(admin) {
             if(!admin) {
                 return res.status(404).json({ 
-                    message: `Admin not found!` 
+                    message: `Not an admin!` 
                 }) 
             }
             if (!bcrypt.compareSync(req.body.adminPassword, admin.password)) {
                 return res.status(401).json({
                     title: 'Unauthorized Access',
-                    error: {message: 'Invalid credentials'}
+                    error: {message: 'Invalid admin credentials'}
                 });
             }
             bcrypt.hash(req.body.newPassword, 10, function(err, hash){
