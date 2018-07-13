@@ -23,7 +23,7 @@ router.use('/', function (req, res, next) {
 });
 
 router.post('/instance/getdescription', function(req, res, next) {
-    console.log(JSON.stringify(req.body, undefined, 2));
+    // console.log(JSON.stringify(req.body, undefined, 2));
     AWS.config.update({ region: req.body.region });
     var params = { 
         InstanceIds: req.body.instanceIDs

@@ -81,7 +81,7 @@ router.post('/signup', function(req, res, next) {
             customer.save().then(function(result) {
                 // console.log(result);
                 res.status(200).json({
-                    success: 'New customer has been created'
+                    success: 'New operator has been created'
                 });
             }).catch(error => {
                 res.status(500).json({
@@ -98,7 +98,7 @@ router.post('/mydata', function(req, res, next) {
     .then(function(customer) {
         if(!customer || customer.length == 0) {
             return res.status(404).json({ 
-                message: `No customer found`
+                message: `No operator found`
             })
         }
         return res.status(200).send(customer);        
@@ -135,7 +135,7 @@ router.put('/updatepersonal', function(req, res, next) {
                 })
             }
             res.status(200).json({
-                success: 'Customer has been updated'
+                success: 'Operator has been updated'
             });
         })
         .catch(error => {
@@ -178,7 +178,7 @@ router.post('/managertocustomer', function(req, res, next) {
             //     message: `Manager deleted successfully`
             // });
             res.status(200).json({
-                success: 'Customer has been downshifted'
+                success: 'Operator has been downshifted'
             });
         })
         .catch(error => {
@@ -213,7 +213,7 @@ router.put('/updatepassword', function(req, res, next) {
             if (!bcrypt.compareSync(req.body.adminPassword, admin.password)) {
                 return res.status(401).json({
                     title: 'Unauthorized Access',
-                    error: {message: 'Invalid admin credentials'}
+                    error: {message: 'Unauthorized access'}
                 });
             }
             bcrypt.hash(req.body.newPassword, 10, function(err, hash){
@@ -232,7 +232,7 @@ router.put('/updatepassword', function(req, res, next) {
                         })
                     }
                     res.status(200).json({
-                        success: 'Customer has been updated'
+                        success: 'Operator has been updated'
                     });
                 })
                 .catch(error => {
