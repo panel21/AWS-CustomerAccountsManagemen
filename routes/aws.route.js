@@ -22,6 +22,22 @@ router.use('/', function (req, res, next) {
     })
 });
 
+router.post('/instance/launch', (req, res, next) => {
+    AWS.config.update({ region: req.body.region });
+    var params = {
+        ImageId: req.body.ImageId,
+        InstanceType: req.body.InstanceType,
+        KeyName: req.body.KeyName,
+        MinCount: 1,
+        MaxCount: 1
+    };
+    ec2 = new AWS.EC2({apiVersion: req.body.apiVersion});
+    ec2.runInstances(params, (err, data) => {
+        if (err ) { return res.status(200).json(err) };
+        return res.json(data);
+    })
+});
+
 router.post('/instance/getdescription', function(req, res, next) {
     // console.log(JSON.stringify(req.body, undefined, 2));
     AWS.config.update({ region: req.body.region });

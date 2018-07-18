@@ -926,6 +926,13 @@ var UserService = (function () {
         return this.http.post(this.url + "/aws/instance/getdescription" + token, body)
             .map(function (res) { return res.json(); });
     };
+    /* to launch instance in AWS */
+    UserService.prototype.launchInstance = function (body) {
+        var headers = new Headers({ 'Content-Type': 'application/json' });
+        var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
+        return this.http.post(this.url + "/aws/instance/launch" + token, body)
+            .map(function (res) { return res.json(); });
+    };
     /* to update instances states in AWS */
     UserService.prototype.startUserInstances = function (body) {
         console.log(body);
