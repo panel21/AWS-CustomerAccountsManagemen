@@ -22,6 +22,18 @@ router.use('/', function (req, res, next) {
     })
 });
 
+router.post('/instance/terminate', (req, res, next) => {
+    AWS.config.update({ region: req.body.region });
+    var params = {
+        InstanceIds: req.body.InstanceIds
+    };
+    ec2 = new AWS.EC2({apiVersion: req.body.apiVersion});
+    ec2.terminateInstances(params, (err, data) => {
+        if (err ) { return res.status(200).json(err) };
+        return res.json(data);
+    })
+});
+
 router.post('/instance/launch', (req, res, next) => {
     AWS.config.update({ region: req.body.region });
     var params = {

@@ -1015,6 +1015,12 @@ var UserService = (function () {
         return this.http.post(this.url + "/aws/instance/stop" + token, body)
             .map(function (res) { return res.json(); });
     };
+    UserService.prototype.terminateInstance = function (body) {
+        var headers = new Headers({ 'Content-Type': 'application/json' });
+        var token = localStorage.getItem('token') ? "?token=" + localStorage.getItem('token') : '';
+        return this.http.post(this.url + "/aws/instance/terminate" + token, body)
+            .map(function (res) { return res.json(); });
+    };
     UserService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Injectable */])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__angular_http__["b" /* Http */]])
