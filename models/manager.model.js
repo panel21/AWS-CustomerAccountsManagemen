@@ -12,6 +12,7 @@ const manager = mongoose.Schema({
     type: {type: String, require: true, default: "manager"},
     instances: [ {
         instanceId: {type: String},
+        runTime: {type: String},
         region: {type: String},
         role: {type: String},
         state: {type: String},

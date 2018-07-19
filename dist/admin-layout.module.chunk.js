@@ -309,6 +309,148 @@ function isUndefined(arg) {
 
 /***/ }),
 
+/***/ "./node_modules/hh-mm-ss/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+  fromMs,
+  fromS,
+  toMs,
+  toS
+}
+
+const zeroFill = __webpack_require__("./node_modules/zero-fill/index.js")
+
+// Time units with their corresponding values in miliseconds
+const HOUR = 3600000
+const MINUTE = 60000
+const SECOND = 1000
+
+const TIME_FORMAT_ERRMSG = 'Time format error'
+
+// =============================================================================
+// Export functions
+// =============================================================================
+
+function fromMs (ms, format = 'mm:ss') {
+  if (typeof ms !== 'number' || Number.isNaN(ms)) {
+    throw new Error('NaN error')
+  }
+
+  let absMs = Math.abs(ms)
+
+  let negative = (ms < 0)
+  let hours = Math.floor(absMs / HOUR)
+  let minutes = Math.floor(absMs % HOUR / MINUTE)
+  let seconds = Math.floor(absMs % MINUTE / SECOND)
+  let miliseconds = Math.floor(absMs % SECOND)
+
+  return formatTime({
+    negative, hours, minutes, seconds, miliseconds
+  }, format)
+}
+
+function fromS (s, format = 'mm:ss') {
+  if (typeof s !== 'number' || Number.isNaN(s)) {
+    throw new Error('NaN error')
+  }
+
+  let ms = s * SECOND
+
+  return fromMs(ms, format)
+}
+
+function toMs (time, format = 'mm:ss') {
+  let re
+
+  if (['mm:ss', 'mm:ss.sss', 'hh:mm:ss', 'hh:mm:ss.sss'].includes(format)) {
+    re = /^(-)?(?:(\d\d+):)?(\d\d):(\d\d)(\.\d+)?$/
+  } else if (format === 'hh:mm') {
+    re = /^(-)?(\d\d):(\d\d)(?::(\d\d)(?:(\.\d+))?)?$/
+  } else {
+    throw new Error(TIME_FORMAT_ERRMSG)
+  }
+
+  let result = re.exec(time)
+  if (!result) throw new Error()
+
+  let negative = result[1] === '-'
+  let hours = result[2] | 0
+  let minutes = result[3] | 0
+  let seconds = result[4] | 0
+  let miliseconds = Math.floor(1000 * result[5] | 0)
+
+  if (minutes > 60 || seconds > 60) {
+    throw new Error()
+  }
+
+  return (negative ? -1 : 1) * (
+    hours * HOUR + minutes * MINUTE + seconds * SECOND + miliseconds
+  )
+}
+
+function toS (time, format = 'mm:ss') {
+  let ms = toMs(time, format)
+  return Math.floor(ms / SECOND)
+}
+
+// =============================================================================
+// Utility functions
+// =============================================================================
+
+function formatTime (time, format) {
+  let showMs
+  let showSc
+  let showHr
+
+  switch (format.toLowerCase()) {
+    case 'hh:mm:ss.sss':
+      showMs = true
+      showSc = true
+      showHr = true
+      break
+    case 'hh:mm:ss':
+      showMs = !(!time.miliseconds)
+      showSc = true
+      showHr = true
+      break
+    case 'hh:mm':
+      showMs = !(!time.miliseconds)
+      showSc = showMs || !(!time.seconds)
+      showHr = true
+      break
+    case 'mm:ss':
+      showMs = !(!time.miliseconds)
+      showSc = true
+      showHr = !(!time.hours)
+      break
+    case 'mm:ss.sss':
+      showMs = true
+      showSc = true
+      showHr = !(!time.hours)
+      break
+    default:
+      throw new Error(TIME_FORMAT_ERRMSG)
+  }
+
+  let hh = zeroFill(2, time.hours)
+  let mm = zeroFill(2, time.minutes)
+  let ss = zeroFill(2, time.seconds)
+  let sss = zeroFill(3, time.miliseconds)
+
+  return (time.negative ? '-' : '') + (showHr ? (
+    showMs ? `${hh}:${mm}:${ss}.${sss}` : showSc ? `${hh}:${mm}:${ss}` : `${hh}:${mm}`
+  ) : (
+    showMs ? `${mm}:${ss}.${sss}` : `${mm}:${ss}`
+  ))
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/lodash/lodash.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17452,6 +17594,31 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./node_modules/zero-fill/index.js":
+/***/ (function(module, exports) {
+
+/**
+ * Given a number, return a zero-filled string.
+ * From http://stackoverflow.com/questions/1267283/
+ * @param  {number} width
+ * @param  {number} number
+ * @return {string}
+ */
+module.exports = function zeroFill (width, number, pad) {
+  if (number === undefined) {
+    return function (number, pad) {
+      return zeroFill(width, number, pad)
+    }
+  }
+  if (pad === undefined) pad = '0'
+  width -= number.toString().length
+  if (width > 0) return new Array(width + (/\./.test(number) ? 2 : 1)).join(pad) + number
+  return number + ''
+}
+
+
+/***/ }),
+
 /***/ "./src/app/dashboard/dashboard.component.css":
 /***/ (function(module, exports) {
 
@@ -17462,7 +17629,7 @@ module.exports = ""
 /***/ "./src/app/dashboard/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"main-content\">\n    <div class=\"container-fluid\">\n        <div class=\"row\">\n            <div class=\"col-lg-3 col-md-6 col-sm-6\">\n                <div class=\"card card-stats\" *ngIf=\"isAdmin\">\n                    <a style=\"cursor:pointer\">\n                        <div class=\"card-header card-header-info card-header-icon\">\n                            <div class=\"card-icon\">\n                                <i class=\"fa fa-users\"></i>\n                            </div>\n                            <p class=\"card-category\">Operators</p>\n                            <h3 class=\"card-title\">{{ numberOfCustomers }}</h3>\n                        </div>\n                        <div class=\"card-footer\">\n                            <!-- <div class=\"stats\">\n                                <i class=\"material-icons\">update</i> Just Updated\n                            </div> -->\n                        </div>\n                    </a>\n                </div>\n            </div>\n            <div class=\"col-lg-3 col-md-6 col-sm-6\">\n                <div class=\"card card-stats\" *ngIf=\"isAdmin\">\n                    <a style=\"cursor:pointer\">\n                        <div class=\"card-header card-header-info card-header-icon\">\n                            <div class=\"card-icon\">\n                                <i class=\"fa fa-users\"></i>\n                            </div>\n                            <p class=\"card-category\">Managers</p>\n                            <h3 class=\"card-title\">{{ numberOfManagers }}</h3>\n                        </div>\n                        <div class=\"card-footer\">\n                            <!-- <div class=\"stats\">\n                                <i class=\"material-icons\">update</i> Just Updated\n                            </div> -->\n                        </div>\n                    </a>\n                </div>\n            </div>\n            <div class=\"col-lg-6 col-md-9 col-sm-9\">\n                <div class=\"row\">\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Instance ID\" type=\"text\" #instanceId>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Region\" type=\"text\" #region>\n                        </mat-form-field>\n                    </div>\n                </div>\n                <div class=\"row\">\n                    <div class=\"col-lg-4\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"startInstance(instanceId.value, region.value, instanceId)\">Start Instance</button>\n                    </div>\n                    <div class=\"col-lg-4\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"stopInstance(instanceId.value, region.value, region)\">Stop Instance</button>\n                    </div>\n                    <div class=\"col-lg-4\" *ngIf=\"!isCustomer\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"terminateInstance(instanceId.value, region.value, region)\">Terminate Instance</button>\n                    </div>\n                </div>\n                <div class=\"row\" *ngIf=\"!isCustomer\">\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"AMI ID  (ami-2cf54551)\" type=\"text\" #amiId>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Instance Type (t2.micro)\" type=\"text\" #instanceType>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Key pair name\" type=\"text\" #keyPairName>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"launchInstance(amiId.value, instanceType.value, keyPairName.value, region.value)\">Launch Instance</button>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        \n        <div class=\"row\" *ngIf=\"isAdmin\">\n            <div class=\"col-md-12\">\n                <div class=\"card\">\n                    <a href=\"#dBothTable\" data-toggle=\"collapse\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\">\n                        <div class=\"card-header card-header-primary\">\n                            <h4 class=\"card-title \">Managers and Operators</h4>\n                            <p class=\"card-category\">Details of managers and their operators</p>\n                        </div>\n                    </a>\n                    <div class=\"card-body collapse show\" id=\"dBothTable\">\n                        <div class=\"row\">\n                            <div class=\"col-lg-3 col-md-6 col-sm-6\" *ngFor=\"let manager of managers; let i = index;\">\n                                <div class=\"card card-stats\">\n                                    <a style=\"cursor:pointer\" (click)=\"open(cardDetails, manager)\">\n                                        <div class=\"card-header card-header-info card-header-icon\">\n                                            <div class=\"card-icon\">\n                                                <i class=\"fa fa-user\"></i>\n                                                <!-- <i class=\"material-icons\">update</i> -->\n                                            </div>\n                                            <p class=\"card-category\">{{ manager.fullName }}</p>\n                                            <p class=\"card-category d-inline\">Operators</p>\n                                            <p class=\"card-title d-inline\">: {{ manager.customers.length }}</p>\n                                        </div>\n                                        <div class=\"card-footer\">\n                                            <div class=\"stats d-inline\">\n                                                <!-- <i class=\"material-icons\">update</i>  -->\n                                                Instance count \n                                                <p class=\"card-title d-inline\">: {{ manager.instances.length }}</p>\n                                            </div>\n                                        </div>\n                                    </a>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        \n        <div class=\"row\">\n            <div class=\"col-lg-12 col-md-12\">\n                <div class=\"card\">\n                    <a href=\"#dCustomersTable\" data-toggle=\"collapse\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\">\n                        <div class=\"card-header card-header-success\">\n                            <h4 class=\"card-title\" >Operators Details</h4>\n                            <!-- <p class=\"card-category\">New employees on 15th September, 2016</p> -->\n                        </div>\n                    </a>\n                    <div class=\"card-body table-responsive collapse\" id=\"dCustomersTable\">\n                        <table class=\"table table-hover\">\n                            <thead class=\"text-success\">\n                                <th *ngIf=\"isAdmin\">&nbsp;</th>\n                                <th>Name</th>\n                                <th>Instance ID</th>\n                                <th>Instance State</th>\n                                <th>Instance Type</th>\n                                <th *ngIf=\"isAdmin\">AMI ID</th>\n                                <th *ngIf=\"isAdmin\">IAM Role</th>\n                                <th>Key Pair Name</th>\n                                <th *ngIf=\"isAdmin\">Public DNS (IPv4)</th>\n                                <th>IPv4 Public IP</th>\n                                <th *ngIf=\"isAdmin\">Private DNS</th>\n                                <th *ngIf=\"isAdmin\">Private IPs</th>\n                                <th *ngIf=\"isAdmin\">Owner</th>\n                                <th *ngIf=\"isAdmin\">Launch Time</th>\n                            </thead>\n                            <tbody>\n                                <tr *ngFor=\"let customer of customers; let i = index;\" data-toggle=\"collapse\" class=\"accordion-toggle\">\n                                    <td class=\"td-actions text-right\" *ngIf=\"isAdmin\">\n                                        <button mat-raised-button type=\"button\" matTooltip=\"Edit\" [matTooltipPosition]=\"'above'\" class=\"btn btn-primary btn-link btn-sm btn-just-icon\" (click)=\"open(content, customer)\">\n                                            <i class=\"material-icons\">edit</i>\n                                        </button>\n                                        <!-- <button mat-raised-button type=\"button\" matTooltip=\"Remove\" [matTooltipPosition]=\"'above'\" class=\"btn btn-danger btn-link btn-sm btn-just-icon\" (click)=\"deleteRecord(customer)\" >\n                                            <i class=\"material-icons\">close</i>\n                                        </button> -->\n                                    </td>\n                                    <!-- <td >{{customer.instances[i]?.INSTANCEDETAILS?.descriptionNotFound}}</td> -->\n                                    <td>{{customer.fullName}}</td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let instance of customer?.instances; let j = index;\" [ngClass]=\"{ 'border-danger': instance.INSTANCEDETAILS?.invalidId , 'border-warning': instance.INSTANCEDETAILS?.descriptionNotFound }\">{{customer.instances[j]?.instanceId}}</p></td>\n                                    <!-- <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let instance of customer.instances\" [ngClass]=\"{ 'border-danger': instance.INSTANCEDETAILS?.invalidId , 'border-warning': instance.INSTANCEDETAILS?.descriptionNotFound }\">{{instance.instanceId}}</p></td> -->\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer?.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.InstanceState}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.InstanceType}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.AMIID}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.IAMRole}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.KeyPairName}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.PublicDNSIPv4}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.IPv4PublicIP}}</p></td>\n                                    <td *ngIf=\"isAdmin\"> <p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.PrivateDNS}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.PrivateIPs}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.Owner}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.LaunchTime}}</p></td>\n                                </tr>                                \n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        <div class=\"row\" *ngIf=\"!isCustomer\">\n            <div class=\"col-lg-12 col-md-12\">\n                <div class=\"card\">\n                    <a href=\"#dManagersTable\" data-toggle=\"collapse\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\">\n                        <div class=\"card-header card-header-success\">\n                            <h4 class=\"card-title\">Managers Details</h4>\n                            <!-- <p class=\"card-category\">New employees on 15th September, 2016</p> -->\n                        </div>\n                    </a>\n                    <div class=\"card-body table-responsive collapse\" id=\"dManagersTable\">\n                        <table class=\"table table-hover\">\n                            <thead class=\"text-success\">\n                                <th *ngIf=\"isAdmin\">&nbsp;</th>\n                                <th>Name</th>\n                                <th>Instance ID</th>\n                                <th>Instance State</th>\n                                <th>Instance Type</th>\n                                <th *ngIf=\"isAdmin\">AMI ID</th>\n                                <th *ngIf=\"isAdmin\">IAM Role</th>\n                                <th>Key Pair Name</th>\n                                <th *ngIf=\"isAdmin\">Public DNS (IPv4)</th>\n                                <th>IPv4 Public IP</th>\n                                <th *ngIf=\"isAdmin\">Private DNS</th>\n                                <th *ngIf=\"isAdmin\">Private IPs</th>\n                                <th *ngIf=\"isAdmin\">Owner</th>\n                                <th *ngIf=\"isAdmin\">Launch Time</th>\n                            </thead>\n                            <tbody>\n                                <tr *ngFor=\"let manager of managers\" data-toggle=\"collapse\" class=\"accordion-toggle\">\n                                    <td class=\"td-actions text-right\" *ngIf=\"isAdmin\">\n                                        <button mat-raised-button type=\"button\" matTooltip=\"Edit\" [matTooltipPosition]=\"'above'\" class=\"btn btn-primary btn-link btn-sm btn-just-icon\" (click)=\"open(content, manager)\">\n                                            <i class=\"material-icons\">edit</i>\n                                        </button>\n                                        <!-- <button mat-raised-button type=\"button\" matTooltip=\"Remove\" [matTooltipPosition]=\"'above'\" class=\"btn btn-danger btn-link btn-sm btn-just-icon\" (click)=\"deleteRecord(manager)\" >\n                                            <i class=\"material-icons\">close</i>\n                                        </button> -->\n                                    </td>\n                                    <td >{{manager.fullName}}</td>\n                                    <!-- <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let instance of manager.instances\" >{{instance.INSTANCEDETAILS.invalidId}}</p></td> -->\n                                    <td><p class=\"border text-center\" *ngFor=\"let instance of manager.instances\" [ngClass]=\"{ 'border-danger': instance.INSTANCEDETAILS?.invalidId , 'border-warning': instance.INSTANCEDETAILS?.descriptionNotFound }\">{{instance.instanceId}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.InstanceState}}</p></td>                                    \n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.InstanceType}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.AMIID}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.IAMRole}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.KeyPairName}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.PublicDNSIPv4}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.IPv4PublicIP}}</p></td>\n                                    <td *ngIf=\"isAdmin\"> <p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.PrivateDNS}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.PrivateIPs}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.Owner}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.LaunchTime}}</p></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                        \n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        <ng-template #content let-c=\"close\" let-d=\"dismiss\">\n            <!-- <ng-template #content let-c=\"close\" let-d=\"dismiss\"> -->\n                <div class=\"modal-header\">\n                    <h4 class=\"modal-title\" id=\"modal-basic-title\">Instance update</h4>\n                    <button type=\"button\" class=\"close\" aria-label=\"Close\" (click)=\"d('Cross click')\">\n                        <span aria-hidden=\"true\">&times;</span>\n                    </button>\n                </div>\n                <div class=\"modal-body\">\n                    <form #updateForm=\"ngForm\" novalidate>\n                        <div class=\"row\"  *ngFor=\"let instance of user.instances; let i = index\">\n                            <div class=\"col-md-3\">\n                                <mat-form-field class=\"example-full-width\">\n                                    <input matInput placeholder=\"Instance ID\" type=\"text\" [(ngModel)]=\"instance.instanceId\" name=\"instanceId-{{i}}\" #instanceId=\"ngModel\" required autofocus>\n                                </mat-form-field>\n                                <!-- <div *ngIf=\"updateForm.hasError('required', 'instanceId') && instanceId.touched\" class=\"alert alert-danger\">Instance ID is required</div> -->\n                            </div>\n                            <div class=\"col-md-3\">\n                                <mat-form-field class=\"example-full-width\">\n                                    <input matInput placeholder=\"Region\" type=\"text\" [(ngModel)]=\"instance.region\" name=\"region-{{i}}\" #region=\"ngModel\" required>\n                                </mat-form-field>\n                                <!-- <div *ngIf=\"updateForm.hasError('required', 'region') && region.touched\" class=\"alert alert-danger\">Region name is required</div> -->\n                            </div>\n                            <div class=\"col-md-3\">\n                                <mat-form-field class=\"example-full-width\">\n                                    <input matInput placeholder=\"Role\" type=\"text\" [(ngModel)]=\"instance.role\" name=\"role-{{i}}\" #role=\"ngModel\">\n                                </mat-form-field>\n                            </div>\n                            <div class=\"col-md-3\">\n                                <div class=\"row mt-3 mb-3\">\n                                    <!-- <button mat-raised-button type=\"button\" matTooltip=\"Remove\" [matTooltipPosition]=\"'above'\" class=\"btn btn-danger btn-link btn-sm btn-just-icon mr-4\" (click)=\"deleteInstance(user, instance.instanceId)\" >\n                                        <i class=\"material-icons\">close</i>\n                                    </button> -->\n                                    <label>\n                                        <input type=\"radio\" class=\"mr-2\" [(ngModel)]=\"instance.state\" name=\"state-{{i}}\" #instanceState=\"ngModel\" value=\"start\">Start\n                                    </label>\n                                    <label>\n                                        <input type=\"radio\" class=\"ml-5 mr-2\" [(ngModel)]=\"instance.state\" name=\"state-{{i}}\" #instanceState=\"ngModel\" value=\"stop\">Stop\n                                    </label>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <button class=\"btn btn-info btn-block\" (click)=\"addNewInstance()\">Add Instance</button>\n                            </div>\n                        </div>\n                    </form>\n                </div>\n                <div class=\"modal-footer\">\n                    <!-- <button type=\"button\" class=\"btn btn-outline-dark\" (click)=\"c('Save click')\">Save</button> -->\n                    <button mat-raised-button type=\"submit\" class=\"btn btn-danger pull-right\" (click)=\"c('Save click')\" (click)=\"updateInstances(user)\">Update</button>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </ng-template>\n            \n            \n            \n            <ng-template #cardDetails let-c=\"close\" let-d=\"dismiss\" class=\"container-fluid\">\n                <!-- <ng-template #content let-c=\"close\" let-d=\"dismiss\"> -->\n                    <div class=\"modal-header\">\n                        <h4 class=\"modal-title\" id=\"modal-basic-title\">Manage: Manager Operator</h4>\n                        <button type=\"button\" class=\"close\" aria-label=\"Close\" (click)=\"d('Cross click')\">\n                            <span aria-hidden=\"true\">&times;</span>\n                        </button>\n                    </div>\n                    <div class=\"modal-body\">\n                        \n                        <form #updateForm=\"ngForm\" novalidate>                            \n                            <div class=\"row\"  *ngFor=\"let customer of customersInManager; let i = index\">\n                                <div class=\"col-md-4\">\n                                    <mat-form-field class=\"example-full-width\">\n                                        <input matInput placeholder=\"Customer name\" type=\"text\" [(ngModel)]=\"customer.fullName\" name=\"fullName-{{i}}\" #fullName=\"ngModel\" (keyup)=\"customer.email = findCustomerByName(fullName.value)\" required>\n                                    </mat-form-field>\n                                </div>\n                                <div class=\"col-md-4\">\n                                    <mat-form-field class=\"example-full-width\">\n                                        <input matInput placeholder=\"Customer Email\" type=\"text\" [(ngModel)]=\"customer.email\" name=\"email-{{i}}\" #email=\"ngModel\" (keyup)=\"customer.fullName = findCustomerByEmail(email.value)\" required>\n                                    </mat-form-field>\n                                </div>\n                                <div class=\"col-md-4\" *ngIf=\"customer.email !== '' && customer.fullName == '';\"><h4 class=\"text-primary\">{{customer.email}} not found!</h4></div>\n                            </div>\n                            <div class=\"row\">\n                                <div class=\"col-md-8\">\n                                    <button class=\"btn btn-info btn-block\" (click)=\"addNewCustomer()\">Add Operator</button>\n                                </div>\n                            </div>\n                        </form>\n                        \n                    </div>\n                    <div class=\"modal-footer\">\n                        <!-- <button type=\"button\" class=\"btn btn-outline-dark\" (click)=\"c('Save click')\">Save</button> -->\n                        <button mat-raised-button type=\"submit\" class=\"btn btn-danger pull-right\" (click)=\"c('Save click')\" (click)=\"updateCustomers(updateForm, user)\">Update</button>\n                        <div class=\"clearfix\"></div>\n                    </div>\n                </ng-template>\n                \n                \n                \n                \n                \n            </div>\n        </div>\n        "
+module.exports = "<div class=\"main-content\">\n    <div class=\"container-fluid\">\n        <div class=\"row\">\n            <div class=\"col-lg-3 col-md-6 col-sm-6\">\n                <div class=\"card card-stats\" *ngIf=\"isAdmin\">\n                    <a style=\"cursor:pointer\">\n                        <div class=\"card-header card-header-info card-header-icon\">\n                            <div class=\"card-icon\">\n                                <i class=\"fa fa-users\"></i>\n                            </div>\n                            <p class=\"card-category\">Operators</p>\n                            <h3 class=\"card-title\">{{ numberOfCustomers }}</h3>\n                        </div>\n                        <div class=\"card-footer\">\n                            <!-- <div class=\"stats\">\n                                <i class=\"material-icons\">update</i> Just Updated\n                            </div> -->\n                        </div>\n                    </a>\n                </div>\n            </div>\n            <div class=\"col-lg-3 col-md-6 col-sm-6\">\n                <div class=\"card card-stats\" *ngIf=\"isAdmin\">\n                    <a style=\"cursor:pointer\">\n                        <div class=\"card-header card-header-info card-header-icon\">\n                            <div class=\"card-icon\">\n                                <i class=\"fa fa-users\"></i>\n                            </div>\n                            <p class=\"card-category\">Managers</p>\n                            <h3 class=\"card-title\">{{ numberOfManagers }}</h3>\n                        </div>\n                        <div class=\"card-footer\">\n                            <!-- <div class=\"stats\">\n                                <i class=\"material-icons\">update</i> Just Updated\n                            </div> -->\n                        </div>\n                    </a>\n                </div>\n            </div>\n            <div class=\"col-lg-6 col-md-9 col-sm-9\">\n                <div class=\"row\">\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Instance ID\" type=\"text\" #instanceId>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Region\" type=\"text\" #region>\n                        </mat-form-field>\n                    </div>\n                </div>\n                <div class=\"row\">\n                    <div class=\"col-lg-4\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"startInstance(instanceId.value, region.value, instanceId)\">Start Instance</button>\n                    </div>\n                    <div class=\"col-lg-4\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"stopInstance(instanceId.value, region.value, region)\">Stop Instance</button>\n                    </div>\n                    <div class=\"col-lg-4\" *ngIf=\"!isCustomer\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"terminateInstance(instanceId.value, region.value, region)\">Terminate Instance</button>\n                    </div>\n                </div>\n                <div class=\"row\" *ngIf=\"!isCustomer\">\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"AMI ID  (ami-2cf54551)\" type=\"text\" #amiId>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Instance Type (t2.micro)\" type=\"text\" #instanceType>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <mat-form-field class=\"example-full-width\">\n                            <input matInput placeholder=\"Key pair name\" type=\"text\" #keyPairName>\n                        </mat-form-field>\n                    </div>\n                    <div class=\"col-lg-6\">\n                        <button class=\"btn btn-success btn-block\" (click)=\"launchInstance(amiId.value, instanceType.value, keyPairName.value, region.value)\">Launch Instance</button>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        \n        <div class=\"row\" *ngIf=\"isAdmin\">\n            <div class=\"col-md-12\">\n                <div class=\"card\">\n                    <a href=\"#dBothTable\" data-toggle=\"collapse\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\">\n                        <div class=\"card-header card-header-primary\">\n                            <h4 class=\"card-title \">Managers and Operators</h4>\n                            <p class=\"card-category\">Details of managers and their operators</p>\n                        </div>\n                    </a>\n                    <div class=\"card-body collapse show\" id=\"dBothTable\">\n                        <div class=\"row\">\n                            <div class=\"col-lg-3 col-md-6 col-sm-6\" *ngFor=\"let manager of managers; let i = index;\">\n                                <div class=\"card card-stats\">\n                                    <a style=\"cursor:pointer\" (click)=\"open(cardDetails, manager)\">\n                                        <div class=\"card-header card-header-info card-header-icon\">\n                                            <div class=\"card-icon\">\n                                                <i class=\"fa fa-user\"></i>\n                                                <!-- <i class=\"material-icons\">update</i> -->\n                                            </div>\n                                            <p class=\"card-category\">{{ manager.fullName }}</p>\n                                            <p class=\"card-category d-inline\">Operators</p>\n                                            <p class=\"card-title d-inline\">: {{ manager.customers.length }}</p>\n                                        </div>\n                                        <div class=\"card-footer\">\n                                            <div class=\"stats d-inline\">\n                                                <!-- <i class=\"material-icons\">update</i>  -->\n                                                Instance count \n                                                <p class=\"card-title d-inline\">: {{ manager.instances.length }}</p>\n                                            </div>\n                                        </div>\n                                    </a>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        \n        <div class=\"row\">\n            <div class=\"col-lg-12 col-md-12\">\n                <div class=\"card\">\n                    <a href=\"#dCustomersTable\" data-toggle=\"collapse\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\">\n                        <div class=\"card-header card-header-success\">\n                            <h4 class=\"card-title\" >Operators Details</h4>\n                            <!-- <p class=\"card-category\">New employees on 15th September, 2016</p> -->\n                        </div>\n                    </a>\n                    <div class=\"card-body table-responsive collapse\" id=\"dCustomersTable\">\n                        <table class=\"table table-hover\">\n                            <thead class=\"text-success\">\n                                <th *ngIf=\"isAdmin\">&nbsp;</th>\n                                <th>Name</th>\n                                <th>Instance ID</th>\n                                <th>Instance State</th>\n                                <th>Instance Type</th>\n                                <th *ngIf=\"isAdmin\">AMI ID</th>\n                                <th *ngIf=\"isAdmin\">IAM Role</th>\n                                <th>Key Pair Name</th>\n                                <th *ngIf=\"isAdmin\">Public DNS (IPv4)</th>\n                                <th>IPv4 Public IP</th>\n                                <th *ngIf=\"isAdmin\">Private DNS</th>\n                                <th *ngIf=\"isAdmin\">Private IPs</th>\n                                <th *ngIf=\"isAdmin\">Owner</th>\n                                <th>Running Time</th>\n                            </thead>\n                            <tbody>\n                                <tr *ngFor=\"let customer of customers; let i = index;\" data-toggle=\"collapse\" class=\"accordion-toggle\">\n                                    <td class=\"td-actions text-right\" *ngIf=\"isAdmin\">\n                                        <button mat-raised-button type=\"button\" matTooltip=\"Edit\" [matTooltipPosition]=\"'above'\" class=\"btn btn-primary btn-link btn-sm btn-just-icon\" (click)=\"open(content, customer)\">\n                                            <i class=\"material-icons\">edit</i>\n                                        </button>\n                                        <!-- <button mat-raised-button type=\"button\" matTooltip=\"Remove\" [matTooltipPosition]=\"'above'\" class=\"btn btn-danger btn-link btn-sm btn-just-icon\" (click)=\"deleteRecord(customer)\" >\n                                            <i class=\"material-icons\">close</i>\n                                        </button> -->\n                                    </td>\n                                    <!-- <td >{{customer.instances[i]?.INSTANCEDETAILS?.descriptionNotFound}}</td> -->\n                                    <td>{{customer.fullName}}</td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let instance of customer?.instances; let j = index;\" [ngClass]=\"{ 'border-danger': instance.INSTANCEDETAILS?.invalidId , 'border-warning': instance.INSTANCEDETAILS?.descriptionNotFound }\">{{customer.instances[j]?.instanceId}}</p></td>\n                                    <!-- <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let instance of customer.instances\" [ngClass]=\"{ 'border-danger': instance.INSTANCEDETAILS?.invalidId , 'border-warning': instance.INSTANCEDETAILS?.descriptionNotFound }\">{{instance.instanceId}}</p></td> -->\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer?.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.InstanceState}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.InstanceType}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.AMIID}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.IAMRole}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.KeyPairName}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.PublicDNSIPv4}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances; let j = index;\">{{customer.instances[j]?.INSTANCEDETAILS?.IPv4PublicIP}}</p></td>\n                                    <td *ngIf=\"isAdmin\"> <p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.PrivateDNS}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.PrivateIPs}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details.INSTANCEDETAILS?.Owner}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of customer.instances\">{{details?.runTime}}</p></td>\n                                </tr>                                \n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        <div class=\"row\" *ngIf=\"!isCustomer\">\n            <div class=\"col-lg-12 col-md-12\">\n                <div class=\"card\">\n                    <a href=\"#dManagersTable\" data-toggle=\"collapse\" role=\"button\" aria-expanded=\"false\" aria-controls=\"collapseExample\">\n                        <div class=\"card-header card-header-success\">\n                            <h4 class=\"card-title\">Managers Details</h4>\n                            <!-- <p class=\"card-category\">New employees on 15th September, 2016</p> -->\n                        </div>\n                    </a>\n                    <div class=\"card-body table-responsive collapse\" id=\"dManagersTable\">\n                        <table class=\"table table-hover\">\n                            <thead class=\"text-success\">\n                                <th *ngIf=\"isAdmin\">&nbsp;</th>\n                                <th>Name</th>\n                                <th>Instance ID</th>\n                                <th>Instance State</th>\n                                <th>Instance Type</th>\n                                <th *ngIf=\"isAdmin\">AMI ID</th>\n                                <th *ngIf=\"isAdmin\">IAM Role</th>\n                                <th>Key Pair Name</th>\n                                <th *ngIf=\"isAdmin\">Public DNS (IPv4)</th>\n                                <th>IPv4 Public IP</th>\n                                <th *ngIf=\"isAdmin\">Private DNS</th>\n                                <th *ngIf=\"isAdmin\">Private IPs</th>\n                                <th *ngIf=\"isAdmin\">Owner</th>\n                                <th>Running Time</th>\n                            </thead>\n                            <tbody>\n                                <tr *ngFor=\"let manager of managers\" data-toggle=\"collapse\" class=\"accordion-toggle\">\n                                    <td class=\"td-actions text-right\" *ngIf=\"isAdmin\">\n                                        <button mat-raised-button type=\"button\" matTooltip=\"Edit\" [matTooltipPosition]=\"'above'\" class=\"btn btn-primary btn-link btn-sm btn-just-icon\" (click)=\"open(content, manager)\">\n                                            <i class=\"material-icons\">edit</i>\n                                        </button>\n                                        <!-- <button mat-raised-button type=\"button\" matTooltip=\"Remove\" [matTooltipPosition]=\"'above'\" class=\"btn btn-danger btn-link btn-sm btn-just-icon\" (click)=\"deleteRecord(manager)\" >\n                                            <i class=\"material-icons\">close</i>\n                                        </button> -->\n                                    </td>\n                                    <td >{{manager.fullName}}</td>\n                                    <!-- <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let instance of manager.instances\" >{{instance.INSTANCEDETAILS.invalidId}}</p></td> -->\n                                    <td><p class=\"border text-center\" *ngFor=\"let instance of manager.instances\" [ngClass]=\"{ 'border-danger': instance.INSTANCEDETAILS?.invalidId , 'border-warning': instance.INSTANCEDETAILS?.descriptionNotFound }\">{{instance.instanceId}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.InstanceState}}</p></td>                                    \n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.InstanceType}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.AMIID}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.IAMRole}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.KeyPairName}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.PublicDNSIPv4}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.IPv4PublicIP}}</p></td>\n                                    <td *ngIf=\"isAdmin\"> <p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.PrivateDNS}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.PrivateIPs}}</p></td>\n                                    <td *ngIf=\"isAdmin\"><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details.INSTANCEDETAILS?.Owner}}</p></td>\n                                    <td><p class=\"border text-center\" *ngFor=\"let details of manager.instances\">{{details?.runTime}}</p></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                        \n                    </div>\n                </div>\n            </div>\n        </div>\n        \n        <ng-template #content let-c=\"close\" let-d=\"dismiss\">\n            <!-- <ng-template #content let-c=\"close\" let-d=\"dismiss\"> -->\n                <div class=\"modal-header\">\n                    <h4 class=\"modal-title\" id=\"modal-basic-title\">Instance update</h4>\n                    <button type=\"button\" class=\"close\" aria-label=\"Close\" (click)=\"d('Cross click')\">\n                        <span aria-hidden=\"true\">&times;</span>\n                    </button>\n                </div>\n                <div class=\"modal-body\">\n                    <form #updateForm=\"ngForm\" novalidate>\n                        <div class=\"row\"  *ngFor=\"let instance of user.instances; let i = index\">\n                            <div class=\"col-md-3\">\n                                <mat-form-field class=\"example-full-width\">\n                                    <input matInput placeholder=\"Instance ID\" type=\"text\" [(ngModel)]=\"instance.instanceId\" name=\"instanceId-{{i}}\" #instanceId=\"ngModel\" required autofocus>\n                                </mat-form-field>\n                                <!-- <div *ngIf=\"updateForm.hasError('required', 'instanceId') && instanceId.touched\" class=\"alert alert-danger\">Instance ID is required</div> -->\n                            </div>\n                            <div class=\"col-md-3\">\n                                <mat-form-field class=\"example-full-width\">\n                                    <input matInput placeholder=\"Region\" type=\"text\" [(ngModel)]=\"instance.region\" name=\"region-{{i}}\" #region=\"ngModel\" required>\n                                </mat-form-field>\n                                <!-- <div *ngIf=\"updateForm.hasError('required', 'region') && region.touched\" class=\"alert alert-danger\">Region name is required</div> -->\n                            </div>\n                            <div class=\"col-md-3\">\n                                <mat-form-field class=\"example-full-width\">\n                                    <input matInput placeholder=\"Role\" type=\"text\" [(ngModel)]=\"instance.role\" name=\"role-{{i}}\" #role=\"ngModel\">\n                                </mat-form-field>\n                            </div>\n                            <div class=\"col-md-3\">\n                                <div class=\"row mt-3 mb-3\">\n                                    <!-- <button mat-raised-button type=\"button\" matTooltip=\"Remove\" [matTooltipPosition]=\"'above'\" class=\"btn btn-danger btn-link btn-sm btn-just-icon mr-4\" (click)=\"deleteInstance(user, instance.instanceId)\" >\n                                        <i class=\"material-icons\">close</i>\n                                    </button> -->\n                                    <label>\n                                        <input type=\"radio\" class=\"mr-2\" [(ngModel)]=\"instance.state\" name=\"state-{{i}}\" #instanceState=\"ngModel\" value=\"start\">Start\n                                    </label>\n                                    <label>\n                                        <input type=\"radio\" class=\"ml-5 mr-2\" [(ngModel)]=\"instance.state\" name=\"state-{{i}}\" #instanceState=\"ngModel\" value=\"stop\">Stop\n                                    </label>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"row\">\n                            <div class=\"col-md-12\">\n                                <button class=\"btn btn-info btn-block\" (click)=\"addNewInstance()\">Add Instance</button>\n                            </div>\n                        </div>\n                    </form>\n                </div>\n                <div class=\"modal-footer\">\n                    <!-- <button type=\"button\" class=\"btn btn-outline-dark\" (click)=\"c('Save click')\">Save</button> -->\n                    <button mat-raised-button type=\"submit\" class=\"btn btn-danger pull-right\" (click)=\"c('Save click')\" (click)=\"updateInstances(user)\">Update</button>\n                    <div class=\"clearfix\"></div>\n                </div>\n            </ng-template>\n            \n            \n            \n            <ng-template #cardDetails let-c=\"close\" let-d=\"dismiss\" class=\"container-fluid\">\n                <!-- <ng-template #content let-c=\"close\" let-d=\"dismiss\"> -->\n                    <div class=\"modal-header\">\n                        <h4 class=\"modal-title\" id=\"modal-basic-title\">Manage: Manager Operator</h4>\n                        <button type=\"button\" class=\"close\" aria-label=\"Close\" (click)=\"d('Cross click')\">\n                            <span aria-hidden=\"true\">&times;</span>\n                        </button>\n                    </div>\n                    <div class=\"modal-body\">\n                        \n                        <form #updateForm=\"ngForm\" novalidate>                            \n                            <div class=\"row\"  *ngFor=\"let customer of customersInManager; let i = index\">\n                                <div class=\"col-md-4\">\n                                    <mat-form-field class=\"example-full-width\">\n                                        <input matInput placeholder=\"Customer name\" type=\"text\" [(ngModel)]=\"customer.fullName\" name=\"fullName-{{i}}\" #fullName=\"ngModel\" (keyup)=\"customer.email = findCustomerByName(fullName.value)\" required>\n                                    </mat-form-field>\n                                </div>\n                                <div class=\"col-md-4\">\n                                    <mat-form-field class=\"example-full-width\">\n                                        <input matInput placeholder=\"Customer Email\" type=\"text\" [(ngModel)]=\"customer.email\" name=\"email-{{i}}\" #email=\"ngModel\" (keyup)=\"customer.fullName = findCustomerByEmail(email.value)\" required>\n                                    </mat-form-field>\n                                </div>\n                                <div class=\"col-md-4\" *ngIf=\"customer.email !== '' && customer.fullName == '';\"><h4 class=\"text-primary\">{{customer.email}} not found!</h4></div>\n                            </div>\n                            <div class=\"row\">\n                                <div class=\"col-md-8\">\n                                    <button class=\"btn btn-info btn-block\" (click)=\"addNewCustomer()\">Add Operator</button>\n                                </div>\n                            </div>\n                        </form>\n                        \n                    </div>\n                    <div class=\"modal-footer\">\n                        <!-- <button type=\"button\" class=\"btn btn-outline-dark\" (click)=\"c('Save click')\">Save</button> -->\n                        <button mat-raised-button type=\"submit\" class=\"btn btn-danger pull-right\" (click)=\"c('Save click')\" (click)=\"updateCustomers(updateForm, user)\">Update</button>\n                        <div class=\"clearfix\"></div>\n                    </div>\n                </ng-template>\n                \n                \n                \n                \n                \n            </div>\n        </div>\n        "
 
 /***/ }),
 
@@ -17478,6 +17645,8 @@ module.exports = "<div class=\"main-content\">\n    <div class=\"container-fluid
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ng_bootstrap_ng_bootstrap__ = __webpack_require__("./node_modules/@ng-bootstrap/ng-bootstrap/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("./node_modules/lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_hh_mm_ss__ = __webpack_require__("./node_modules/hh-mm-ss/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_hh_mm_ss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_hh_mm_ss__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17487,6 +17656,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+
 
 
 
@@ -17952,22 +18122,15 @@ var DashboardComponent = (function () {
                     role: ""
                 };
                 _this.managersInstances.push(newInstance);
-                console.log(_this.managersInstances);
-                console.log(_this.managers);
+                // console.log(this.managersInstances);
+                // console.log(this.managers);
                 var body = {
                     email: _this.managers[0].email,
                     instances: _this.managers[0].instances,
                     type: _this.managers[0].type
                 };
-                console.log(body);
-                _this.userService.updateUserInstances(body)
-                    .subscribe(function (res) {
-                    __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'success', 'Database: Records updated successfully!');
-                    _this.ngOnInit();
-                }, function (error) {
-                    console.log(error);
-                    __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'danger', 'Database: Some error in updating instances!');
-                });
+                // console.log(body);
+                _this.updateUserInstnces(body);
             }
             else if (_this.isManager) {
                 message = res.message;
@@ -17976,6 +18139,17 @@ var DashboardComponent = (function () {
             _this.ngOnInit();
         }, function (error) {
             console.log(error);
+        });
+    };
+    DashboardComponent.prototype.updateUserInstnces = function (body) {
+        var _this = this;
+        this.userService.updateUserInstances(body)
+            .subscribe(function (res) {
+            __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'success', 'Database: Records updated successfully!');
+            _this.ngOnInit();
+        }, function (error) {
+            console.log(error);
+            __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'danger', 'Database: Some error in updating instances!');
         });
     };
     DashboardComponent.prototype.startInstance = function (instanceId, region, field) {
@@ -18026,10 +18200,76 @@ var DashboardComponent = (function () {
         };
         this.userService.stopInstance(body)
             .subscribe(function (res) {
-            // console.log(res);
-            // console.log(body);
-            // console.log(res.StoppingInstances[0].PreviousState.Name);
-            message = res.message == undefined ? res.StoppingInstances[0].PreviousState.Name == "stopped" ? "Instance already stopped" : "Stopping instance" : res.message;
+            // message = res.message == undefined ? res.StoppingInstances[0].PreviousState.Name == "stopped" ? "Instance already stopped": "Stopping instance" : res.message;
+            if (res.message == undefined) {
+                if (res.StoppingInstances[0].PreviousState.Name == "stopped") {
+                    message = "Instance already stopped";
+                }
+                else {
+                    message = "Stopping instance";
+                    var body2 = {
+                        instanceName: instanceId.trim(),
+                        region: region.trim()
+                    };
+                    _this.userService.getInstancesDescription(body2)
+                        .subscribe(function (res) {
+                        var launchTime = new Date(res.Reservations["0"].Instances["0"].LaunchTime);
+                        // console.log(launchTime);
+                        var now = new Date();
+                        var difference = now.getTime() - launchTime.getTime();
+                        // console.log("Diff: "+ difference);
+                        // console.log(TimeFormat.fromMs(difference, 'hh:mm:ss'));
+                        // console.log(res.Reservations["0"].Instances["0"].LaunchTime);
+                        // console.log(res);
+                        if (_this.isManager) {
+                            // console.log(this.managersInstances);
+                            // console.log(this.managers);
+                            for (var i = 0; i < _this.managersInstances.length; i++) {
+                                var currentInstance = _this.managersInstances[i];
+                                if (currentInstance.instanceId === instanceId.trim()) {
+                                    var before = __WEBPACK_IMPORTED_MODULE_6_hh_mm_ss__["toS"](currentInstance.runTime == undefined ? '00:00:00' : currentInstance.runTime);
+                                    var now = before + difference;
+                                    _this.managersInstances[i].runTime = __WEBPACK_IMPORTED_MODULE_6_hh_mm_ss__["fromMs"](now, 'hh:mm:ss');
+                                    // console.log(this.managersInstances);
+                                    var body3 = {
+                                        email: _this.managers[0].email,
+                                        instances: _this.managers[0].instances,
+                                        type: _this.managers[0].type
+                                    };
+                                    // console.log(body3);
+                                    _this.updateUserInstnces(body3);
+                                }
+                            }
+                        }
+                        else if (_this.isCustomer) {
+                            // console.log(this.customers);
+                            for (var i = 0; i < _this.customersInstances.length; i++) {
+                                var currentInstance = _this.customersInstances[i];
+                                if (currentInstance.instanceId === instanceId.trim()) {
+                                    var before = __WEBPACK_IMPORTED_MODULE_6_hh_mm_ss__["toS"](currentInstance.runTime == undefined ? '00:00:00' : currentInstance.runTime);
+                                    // console.log(before);
+                                    var now = before + difference;
+                                    // console.log(now);
+                                    _this.customersInstances[i].runTime = __WEBPACK_IMPORTED_MODULE_6_hh_mm_ss__["fromMs"](now, 'hh:mm:ss');
+                                    // console.log(this.customersInstances);
+                                    var body3 = {
+                                        email: _this.customers[0].email,
+                                        instances: _this.customers[0].instances,
+                                        type: _this.customers[0].type
+                                    };
+                                    // console.log(body3);
+                                    _this.updateUserInstnces(body3);
+                                }
+                            }
+                        }
+                    }, function (error) {
+                        console.log(error);
+                    });
+                }
+            }
+            else {
+                message = res.message;
+            }
             __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'info', message);
             _this.ngOnInit();
         }, function (error) {
@@ -18077,7 +18317,7 @@ var DashboardComponent = (function () {
             instances: user.instances,
             type: user.type
         };
-        console.log(JSON.stringify(body, undefined, 2));
+        // console.log(JSON.stringify(body, undefined, 2));
         var body2 = __WEBPACK_IMPORTED_MODULE_5_lodash__["chain"](body.instances).groupBy("region").map(function (v, i) {
             return {
                 region: i,
@@ -18157,14 +18397,18 @@ var DashboardComponent = (function () {
         //     Notification.showNotification('top', 'right', 'danger', 'AWS: Some error in stopping instances!');
         // }
         // if(startFlag && startFlag) {
-        this.userService.updateUserInstances(body)
-            .subscribe(function (res) {
-            __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'success', 'Database: Records updated successfully!');
-            _this.ngOnInit();
-        }, function (error) {
-            console.log(error);
-            __WEBPACK_IMPORTED_MODULE_2__utils_notification_util__["a" /* Notification */].showNotification('top', 'right', 'danger', 'Database: Some error in updating instances!');
-        });
+        this.updateUserInstnces(body);
+        // this.userService.updateUserInstances(body)
+        // .subscribe(
+        //     res => {
+        //         Notification.showNotification('top', 'right', 'success', 'Database: Records updated successfully!');
+        //         this.ngOnInit();
+        //     },
+        //     error => {
+        //         console.log(error);
+        //         Notification.showNotification('top', 'right', 'danger', 'Database: Some error in updating instances!');
+        //     }
+        // )
         // }
         // this.router.navigate(['dashboard']);
     };

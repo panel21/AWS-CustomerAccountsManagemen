@@ -7,6 +7,7 @@ const admin = mongoose.Schema({
     password: {type: String, required: true},
     instances: [ {
         instanceId: {type: String},
+        runTime: {type: String},
         region: {type: String},
         role: {type: String},
         state: {type: String}

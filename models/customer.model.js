@@ -12,6 +12,7 @@ const customer = mongoose.Schema({
     type: {type: String, require: true, default: "customer"},
     instances: [ {
         instanceId: {type: String},
+        runTime: {type: String},
         region: {type: String},
         role: {type: String},
         state: {type: String}
